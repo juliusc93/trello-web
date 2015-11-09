@@ -1,26 +1,21 @@
 <p id="notice"><%= notice %></p>
 
 <% if user_signed_in? %>
-<h1>Listing Tasks</h1>
-
-<table>
-  <thead>
-    <tr>
-      <th>Title</th>
-      <th>Author</th>
-      <th>Description</th>
-      <th>Duration</th>
-      <th>Start</th>
-      <th>End</th>
-      <th>Finished</th>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
-
-  <tbody>
-    
-      <% @tasks.each do |task| %>
-        <% if task.userid == current_user.userid %>
+  <h1>Pending Tasks</h1>
+  
+  <table>
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Description</th>
+        <th colspan="3"></th>
+      </tr>
+    </thead>
+  
+    <tbody>
+      <% @tasks.order(end: :desc).each do |task| %>
+        <% if task.finished == false && !task.end.past? %>
         <tr>
           <td><%= task.title %></td>
           <td><%= task.userid %></td>
@@ -37,13 +32,84 @@
         </tr>
         <% end %>
       <% end %>
-  </tbody>
-</table>
-
-
-<br>
-
-<%= link_to 'New Task', new_task_path, class: "button" %>
+    </tbody>
+  </table>
+  
+  <h2>Expired tasks</h2>
+  
+  <table>
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Description</th>
+        <th colspan="3"></th>
+      </tr>
+    </thead>
+  
+    <tbody>
+      <% @tasks.order(end: :desc).each do |task| %>
+        <% if task.finished == false && task.end.past? %>
+        <tr>
+          <td><%= task.title %></td>
+          <td><%= task.userid %></td>
+          <td><%= task.description %></td>
+          <!--
+          <td><%= task.duration %></td>
+          <td><%= task.start %></td>
+          <td><%= task.end %></td>
+          <td><%= task.finished %></td>
+          -->
+          <td><%= link_to 'Show', task %></td>
+          <td><%= link_to 'Edit', edit_task_path(task) %></td>
+          <td><%= link_to 'Destroy', task, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        </tr>
+        <% end %>
+      <% end %>
+    </tbody>
+  </table>
+  
+  
+  <br>
+  
+  <h1>Finished Tasks</h1>
+  
+  <table>
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Description</th>
+        <th colspan="3"></th>
+      </tr>
+    </thead>
+  
+    <tbody>
+      <% @tasks.order(end: :desc).each do |task| %>
+        <% if task.finished == true %>
+        <tr>
+          <td><%= task.title %></td>
+          <td><%= task.userid %></td>
+          <td><%= task.description %></td>
+          <!--
+          <td><%= task.duration %></td>
+          <td><%= task.start %></td>
+          <td><%= task.end %></td>
+          <td><%= task.finished %></td>
+          -->
+          <td><%= link_to 'Show', task %></td>
+          <td><%= link_to 'Edit', edit_task_path(task) %></td>
+          <td><%= link_to 'Destroy', task, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        </tr>
+        <% end %>
+      <% end %>
+    </tbody>
+  </table>
+  
+  
+  <br>
+  
+  <%= link_to 'New Task', new_task_path, class: "button round" %>
 
 <% else %>
   <h1>You must log in to check your tasks!</h1>
